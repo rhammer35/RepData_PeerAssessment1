@@ -8,18 +8,30 @@ output:
 
 ## Loading and preprocessing the data
 ```{r}
-monitoring_data <- read.csv(activity.csv)
+monitoring_data <- read.csv("activity.csv")
 monitoring_data$date <- as.Date(monitoring_data$date, format = "%Y-%m-%d")
 ```
 
 
 
 ## What is mean total number of steps taken per day?
-
+```{r}
+monitoring_data2 <- subset(monitoring_data, monitoring_data$steps != 'NA')
+daily_total_steps <- tapply(monitoring_data2$steps, monitoring_data2$date, sum)
+hist(daily_total_steps, col = "blue", xlab = "Total Daily Steps")
+steps_summary <- summary(daily_total_steps)
+print(steps_summary[3:4])
+```
 
 
 ## What is the average daily activity pattern?
-
+```{r}
+Interval_Average <- tapply(monitoring_data$steps, monitoring_data$interval, mean, na.rm = TRUE)
+Interval <- unique(monitoring_data$interval)
+interval_average_df <- as.data.frame(cbind(Interval, Interval_Average))
+with(interval_average_df, plot(Interval, Interval_Average, type = "l", xlab = "Time Interval (in 5 min chunks)", ylab = "Average Steps"))
+print(interval_average_df[interval_average_df$Interval_Average == max(interval_average_df$Interval_Average), ])
+```
 
 
 ## Imputing missing values
