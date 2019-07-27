@@ -34,7 +34,22 @@ print(interval_average_df[interval_average_df$Interval_Average == max(interval_a
 ```
 
 
-## Imputing missing values
+## Imputing missing values using the rounded mean value for the daily interval in question
+```{r}
+Total_NAs <- sum(as.numeric(is.na(monitoring_data$steps)))
+print(c("Total NA Values = ", Total_NAs), quote = FALSE)
+monitoring_data3 <- monitoring_data
+monitoring_data$intervalmean <- rep(Interval_Average[1:288], 61)
+for (n in 1:17568) {
+    if (is.na(monitoring_data3$steps[n]) == TRUE) {
+        monitoring_data3$steps[n] <- round(monitoring_data$intervalmean[n])
+    }
+}
+imputed_daily_total_steps <- tapply(monitoring_data3$steps, monitoring_data3$date, sum)
+hist(imputed_daily_total_steps, col = "cornflowerblue", xlab = "Imputed Total Daily Steps")
+imputed_steps_summary <- summary(imputed_daily_total_steps)
+print(imputed_steps_summary[3:4])
+```
 
 
 
