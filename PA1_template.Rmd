@@ -49,8 +49,31 @@ imputed_daily_total_steps <- tapply(monitoring_data3$steps, monitoring_data3$dat
 hist(imputed_daily_total_steps, col = "cornflowerblue", xlab = "Imputed Total Daily Steps")
 imputed_steps_summary <- summary(imputed_daily_total_steps)
 print(imputed_steps_summary[3:4])
+print(steps_summary[3:4])
+print("Substituting daily interval averages to impute missing values slightly lowers the median and mean", quote = FALSE)
 ```
 
 
-
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+monitoring_data3$day <- weekdays(monitoring_data3$date)
+day_names <- unique(monitoring_data3$day)
+monitoring_data3$day_type <- monitoring_data3$day
+for (n in 1:17568) {
+    day_type_test <- as.numeric(monitoring_data3$day[n] == day_names[1:5])
+    if (sum(day_type_test) > 0) {
+        monitoring_data3$day_type[n] <- "Weekday"
+    }
+    else {
+        monitoring_data3$day_type[n] <- "Weekend"
+    }
+}
+weekday_data <- monitoring_data3[monitoring_data3$day_type == "Weekday", ]
+weekend_data <- monitoring_data3[monitoring_data3$day_type == "Weekend", ]
+Weekday_Interval_Average <- tapply(weekday_data$steps, weekday_data$interval, mean)
+Weekend_Interval_Average <- tapply(weekend_data$steps, weekend_data$interval, mean)
+par(mfrow = c(2, 1), mar = c(3, 4, 1, 1), oma = c(0, 0, 0, 0))
+plot(Interval, Weekday_Interval_Average, type = "l", ylab = "# of steps", main = "Weekday Interval")
+plot(Interval, Weekend_Interval_Average, type = "l", ylab = "# of steps", main = "Weekend Interval")
+```
+
